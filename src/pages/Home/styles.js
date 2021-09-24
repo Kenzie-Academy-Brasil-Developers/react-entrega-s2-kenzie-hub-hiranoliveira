@@ -7,7 +7,7 @@ export const Container = styled.div`
   text-align: center;
   height: 100vh;
   width: 50vw;
-  margin 0 auto;
+  margin: 0 auto;
 `;
 
 export const Content = styled.div`
