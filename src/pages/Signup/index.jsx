@@ -1,6 +1,6 @@
 import { AnimationContainer, Background, Container, Content } from "./styles";
 import Button from "../../components/Button";
-import { Link, useHistory } from "react-router-dom";
+import { Link, Redirect, useHistory } from "react-router-dom";
 import Input from "../../components/Input";
 import { useForm } from "react-hook-form";
 import * as yup from "yup";
@@ -8,7 +8,7 @@ import { yupResolver } from "@hookform/resolvers/yup";
 import api from "../../services/api";
 import { toast } from "react-toastify";
 
-const Signup = () => {
+const Signup = ({ auth }) => {
   const schema = yup.object().shape({
     name: yup.string().required("Campo obrigatório!"),
     email: yup.string().email("Email inválido").required("Campo obrigatório!"),
@@ -53,6 +53,10 @@ const Signup = () => {
       .catch((err) => toast.error("Erro ao criar a conta, tente outro email"));
     // console.log(user);
   };
+
+  if (auth) {
+    return <Redirect to="/dashboard" />;
+  }
 
   return (
     <Container>

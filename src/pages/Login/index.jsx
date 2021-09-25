@@ -1,6 +1,6 @@
 import { AnimationContainer, Background, Container, Content } from "./styles";
 import Button from "../../components/Button";
-import { Link, useHistory } from "react-router-dom";
+import { Link, Redirect, useHistory } from "react-router-dom";
 import Input from "../../components/Input";
 import { useForm } from "react-hook-form";
 import * as yup from "yup";
@@ -8,7 +8,7 @@ import { yupResolver } from "@hookform/resolvers/yup";
 import api from "../../services/api";
 import { toast } from "react-toastify";
 
-const Login = () => {
+const Login = ({ auth, setAuth }) => {
   const schema = yup.object().shape({
     email: yup.string().email("Email inválido").required("Campo obrigatório!"),
     password: yup
@@ -27,24 +27,24 @@ const Login = () => {
 
   const history = useHistory();
 
-  const onSubmitFunction = ({
-    name,
-    email,
-    password,
-    bio,
-    contact,
-    course_module,
-  }) => {
-    const user = { name, email, password, bio, contact, course_module };
+  const onSubmitFunction = (data) => {
     api
-      .post("/users", user)
-      .then((_) => {
-        toast.success("Sucesso ao criar a conta");
-        return history.push("/login");
+      .post("/sessions", data)
+      .then((res) => {
+        const { token } = res.data;
+
+        localStorage.setItem("@Khub:token", JSON.stringify(token));
+
+        setAuth(true);
+
+        return history.push("/dashboard");
       })
-      .catch((err) => toast.error("Erro ao criar a conta, tente outro email"));
-    // console.log(user);
+      .catch((err) => toast.error("Email ou senha inválidos"));
   };
+
+  if (auth) {
+    return <Redirect to="/dashboard" />;
+  }
 
   return (
     <Container>
