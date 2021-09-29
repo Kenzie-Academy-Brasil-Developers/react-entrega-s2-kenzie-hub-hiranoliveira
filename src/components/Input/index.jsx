@@ -8,7 +8,7 @@ const Input = ({ label, register, name, error, ...rest }) => {
       </div>
 
       <InputContainer isErrored={!!error}>
-        <input {...rest} />
+        <input {...register(name)} {...rest} />
       </InputContainer>
     </Container>
   );

@@ -33,7 +33,7 @@ const Login = ({ auth, setAuth }) => {
       .then((res) => {
         const { token } = res.data;
 
-        localStorage.setItem("@Khub:token", JSON.stringify(token));
+        localStorage.setItem("token", JSON.stringify(token));
 
         setAuth(true);
 
