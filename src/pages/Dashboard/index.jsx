@@ -9,7 +9,7 @@ import { yupResolver } from "@hookform/resolvers/yup";
 import axios from "axios";
 
 const Dashboard = ({ auth }) => {
-  const [data, setData] = useState({});
+  const [user, setUser] = useState([]);
 
   const [token] = useState(
     JSON.parse(localStorage.getItem("@Khub:token")) || ""
@@ -21,8 +21,8 @@ const Dashboard = ({ auth }) => {
         headers: { Authorization: `Bearer ${token}` },
       })
       .then((res) => {
-        setData(res.data);
-        console.log(res.data);
+        setUser(res.data);
+        // console.log(res.data);
       })
       .catch((e) => console.log(e));
   }, []);
@@ -46,19 +46,19 @@ const Dashboard = ({ auth }) => {
         headers: { Authorization: `Bearer ${token}` },
       })
       .then((res) => {
-        setData(res.data);
+        setUser(res.data);
         // console.log(res.data);
       })
       .catch((e) => console.log(e));
   };
 
-  const onSubmitFunction = (data) => {
+  const onSubmitFunction = (newTech) => {
     axios
-      .post("https://kenziehub.herokuapp.com/users/techs", data, {
+      .post("https://kenziehub.herokuapp.com/users/techs", newTech, {
         headers: { Authorization: `Bearer ${token}` },
       })
       .then((res) => {
-        // console.log(res.data);
+        console.log(res.data);
         loadPage();
       })
       .catch((e) => console.log(e));
@@ -81,7 +81,7 @@ const Dashboard = ({ auth }) => {
   if (!auth) {
     return <Redirect to="/login" />;
   }
-  console.log(data.techs);
+  console.log(user.techs);
 
   return (
     <Container>
@@ -94,16 +94,16 @@ const Dashboard = ({ auth }) => {
           <Button type="submit">Adicionar</Button>
         </form>
       </InputContainer>
-      <h1>Nome: {data.name}</h1>
+      <h1>Nome: {user?.name}</h1>
       <br />
-      <h4>Bio: {data?.bio}</h4>
+      <h4>Bio: {user?.bio}</h4>
       <br />
-      <h4>Contato: {data?.contact}</h4>
+      <h4>Contato: {user?.contact}</h4>
       <br />
       <h2>Tecnologias:</h2>
       <TechsContainer>
-        {data.techs &&
-          data?.techs.map((item, index) => (
+        {user.techs &&
+          user?.techs.map((item, index) => (
             <Card
               key={index}
               title={item.title}
