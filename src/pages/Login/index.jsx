@@ -7,6 +7,7 @@ import * as yup from "yup";
 import { yupResolver } from "@hookform/resolvers/yup";
 import api from "../../services/api";
 import { toast } from "react-toastify";
+import axios from "axios";
 
 const Login = ({ auth, setAuth }) => {
   const schema = yup.object().shape({
@@ -28,8 +29,8 @@ const Login = ({ auth, setAuth }) => {
   const history = useHistory();
 
   const onSubmitFunction = (data) => {
-    api
-      .post("/sessions", data)
+    axios
+      .post("https://kenziehub.herokuapp.com/sessions", data)
       .then((res) => {
         const { token } = res.data;
 

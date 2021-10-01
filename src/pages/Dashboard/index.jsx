@@ -9,6 +9,11 @@ import { yupResolver } from "@hookform/resolvers/yup";
 import axios from "axios";
 
 const Dashboard = ({ auth }) => {
+  const schema = yup.object().shape({
+    title: yup.string().required("Campo obrigatório!"),
+    status: yup.string().required("Campo obrigatório!"),
+  });
+
   const [user, setUser] = useState([]);
 
   const [token] = useState(
@@ -20,17 +25,18 @@ const Dashboard = ({ auth }) => {
       .get("https://kenziehub.herokuapp.com/profile", {
         headers: { Authorization: `Bearer ${token}` },
       })
-      .then((res) => {
-        setUser(res.data);
-        // console.log(res.data);
-      })
+      .then((res) => setUser(res.data))
       .catch((e) => console.log(e));
   }, []);
 
-  const schema = yup.object().shape({
-    title: yup.string().required("Campo obrigatório!"),
-    status: yup.string().required("Campo obrigatório!"),
-  });
+  const loadPage = () => {
+    axios
+      .get("https://kenziehub.herokuapp.com/profile", {
+        headers: { Authorization: `Bearer ${token}` },
+      })
+      .then((res) => setUser(res.data))
+      .catch((e) => console.log(e));
+  };
 
   const {
     register,
@@ -40,24 +46,13 @@ const Dashboard = ({ auth }) => {
     resolver: yupResolver(schema),
   });
 
-  const loadPage = () => {
-    axios
-      .get("https://kenziehub.herokuapp.com/profile", {
-        headers: { Authorization: `Bearer ${token}` },
-      })
-      .then((res) => {
-        setUser(res.data);
-        // console.log(res.data);
-      })
-      .catch((e) => console.log(e));
-  };
-
   const onSubmitFunction = (newTech) => {
     axios
       .post("https://kenziehub.herokuapp.com/users/techs", newTech, {
         headers: { Authorization: `Bearer ${token}` },
       })
       .then((res) => {
+        setUser(newTech);
         console.log(res.data);
         loadPage();
       })
@@ -72,7 +67,7 @@ const Dashboard = ({ auth }) => {
         },
       })
       .then((res) => {
-        // console.log(res.data);
+        console.log(res.data);
         loadPage();
       })
       .catch((e) => console.log(e));
@@ -81,29 +76,23 @@ const Dashboard = ({ auth }) => {
   if (!auth) {
     return <Redirect to="/login" />;
   }
-  console.log(user.techs);
 
   return (
     <Container>
       <InputContainer>
         <form onSubmit={handleSubmit(onSubmitFunction)}>
-          <input placeholder="Nova tech" {...register("title")} name="title" />
+          <input placeholder="Nova tech" {...register("title")} />
           {errors.title?.message}
-          <input placeholder="Status" {...register("status")} name="status" />
+          <input placeholder="Status" {...register("status")} />
           {errors.status?.message}
           <Button type="submit">Adicionar</Button>
         </form>
       </InputContainer>
-      <h1>Nome: {user?.name}</h1>
-      <br />
-      <h4>Bio: {user?.bio}</h4>
-      <br />
-      <h4>Contato: {user?.contact}</h4>
-      <br />
+      <h2>{user.name}</h2>
       <h2>Tecnologias:</h2>
       <TechsContainer>
         {user.techs &&
-          user?.techs.map((item, index) => (
+          user.techs.map((item, index) => (
             <Card
               key={index}
               title={item.title}
