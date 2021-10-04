@@ -6,35 +6,34 @@ import Card from "../../components/Card";
 import { useEffect, useState } from "react";
 import * as yup from "yup";
 import { yupResolver } from "@hookform/resolvers/yup";
-import axios from "axios";
+import api from "../../services/api";
 
 const Dashboard = ({ auth }) => {
+  const [users, setUsers] = useState();
+  const functionUsers = () => {
+    api.get("/users").then((res) => setUsers(res.data));
+  };
   const schema = yup.object().shape({
     title: yup.string().required("Campo obrigatório!"),
     status: yup.string().required("Campo obrigatório!"),
   });
-
-  const [user, setUser] = useState([]);
-
-  const [token] = useState(
-    JSON.parse(localStorage.getItem("@Khub:token")) || ""
-  );
-
   useEffect(() => {
-    axios
-      .get("https://kenziehub.herokuapp.com/profile", {
-        headers: { Authorization: `Bearer ${token}` },
-      })
-      .then((res) => setUser(res.data))
-      .catch((e) => console.log(e));
+    loadPage();
   }, []);
 
+  const token = JSON.parse(localStorage.getItem("token")) || "";
+
+  const user = JSON.parse(localStorage.getItem("id")) || "";
+
+  const [techs, setTechs] = useState([]);
+
   const loadPage = () => {
-    axios
-      .get("https://kenziehub.herokuapp.com/profile", {
+    const { id } = user;
+    api
+      .get(`/users/${id}`, {
         headers: { Authorization: `Bearer ${token}` },
       })
-      .then((res) => setUser(res.data))
+      .then((res) => setTechs(res.data))
       .catch((e) => console.log(e));
   };
 
@@ -46,13 +45,16 @@ const Dashboard = ({ auth }) => {
     resolver: yupResolver(schema),
   });
 
-  const onSubmitFunction = (newTech) => {
-    axios
-      .post("https://kenziehub.herokuapp.com/users/techs", newTech, {
-        headers: { Authorization: `Bearer ${token}` },
-      })
+  const onSubmitFunction = ({ title, status }) => {
+    api
+      .post(
+        "/users/techs",
+        { title: title, status: status },
+        {
+          headers: { Authorization: `Bearer ${token}` },
+        }
+      )
       .then((res) => {
-        setUser(newTech);
         console.log(res.data);
         loadPage();
       })
@@ -60,8 +62,8 @@ const Dashboard = ({ auth }) => {
   };
 
   const techDelete = (id) => {
-    axios
-      .delete(`https://kenziehub.herokuapp.com/users/techs/${id}`, {
+    api
+      .delete(`/users/techs/${id}`, {
         headers: {
           Authorization: `Bearer ${token}`,
         },
@@ -77,6 +79,8 @@ const Dashboard = ({ auth }) => {
     return <Redirect to="/login" />;
   }
 
+  console.log(users);
+
   return (
     <Container>
       <InputContainer>
@@ -88,11 +92,11 @@ const Dashboard = ({ auth }) => {
           <Button type="submit">Adicionar</Button>
         </form>
       </InputContainer>
-      <h2>{user.name}</h2>
       <h2>Tecnologias:</h2>
       <TechsContainer>
-        {user.techs &&
-          user.techs.map((item, index) => (
+        {console.log(techs)}
+        {techs.techs &&
+          techs.techs.map((item, index) => (
             <Card
               key={index}
               title={item.title}

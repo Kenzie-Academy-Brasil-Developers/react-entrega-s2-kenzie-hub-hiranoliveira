@@ -9,7 +9,7 @@ const Routes = () => {
   const [auth, setAuth] = useState(false);
 
   useEffect(() => {
-    const token = JSON.parse(localStorage.getItem("@Khub:token"));
+    const token = JSON.parse(localStorage.getItem("token"));
 
     if (token) {
       return setAuth(true);

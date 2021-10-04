@@ -7,7 +7,6 @@ import * as yup from "yup";
 import { yupResolver } from "@hookform/resolvers/yup";
 import api from "../../services/api";
 import { toast } from "react-toastify";
-import axios from "axios";
 
 const Signup = ({ auth }) => {
   const schema = yup.object().shape({
@@ -45,8 +44,8 @@ const Signup = ({ auth }) => {
     course_module,
   }) => {
     const user = { name, email, password, bio, contact, course_module };
-    axios
-      .post("https://kenziehub.herokuapp.com/users", user)
+    api
+      .post("/users", user)
       .then((_) => {
         toast.success("Sucesso ao criar a conta");
         return history.push("/login");

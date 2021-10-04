@@ -7,7 +7,6 @@ import * as yup from "yup";
 import { yupResolver } from "@hookform/resolvers/yup";
 import api from "../../services/api";
 import { toast } from "react-toastify";
-import axios from "axios";
 
 const Login = ({ auth, setAuth }) => {
   const schema = yup.object().shape({
@@ -29,15 +28,18 @@ const Login = ({ auth, setAuth }) => {
   const history = useHistory();
 
   const onSubmitFunction = (data) => {
-    axios
-      .post("https://kenziehub.herokuapp.com/sessions", data)
+    api
+      .post("/sessions", data)
       .then((res) => {
-        const { token } = res.data;
+        const { token, user } = res.data;
 
         localStorage.setItem("token", JSON.stringify(token));
 
+        localStorage.setItem("id", JSON.stringify(user));
+
         setAuth(true);
 
+        console.log(data);
         return history.push("/dashboard");
       })
       .catch((err) => toast.error("Email ou senha inválidos"));
